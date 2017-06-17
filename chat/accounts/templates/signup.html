@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-2 col-md-2">
+            <h2> <strong style="color:#0b7c58">Sign Up</strong> </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class=" col-md-offset-2 col-md-8"><br>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class='form-horizontal' data-toggle="validator" multiple method="post" role="form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-3">
+                                    <label class="control-label" for="id_first_name">*First Name :</label>
+                                </div>
+                                <div class="col-sm-6">
+                                    {{ form.first_name }}
+                                    <div class="help-block with-errors"></div>
+                                    {% if form.first_name.errors %}
+                                        <div class="alert alert-danger server_errors" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            {{ form.first_name.errors.as_text }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-3">
+                                    <label class="control-label" for="id_last_name">*Last Name :</label>
+                                </div>
+                                <div class="col-sm-6">
+                                    {{ form.last_name }}
+                                    <div class="help-block with-errors"></div>
+                                    {% if form.last_name.errors %}
+                                        <div class="alert alert-danger server_errors" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            {{ form.last_name.errors.as_text }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-3">
+                                    <label class="control-label" for="id_email">*Email :</label>
+                                </div>
+                                <div class="col-sm-6">
+                                    {{ form.email }}
+                                    <!-- <div class="help-block with-errors"></div> -->
+                                    <!-- {% if form.email.errors %}
+                                        <div class="alert alert-danger server_errors" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            {{ form.email.errors.as_text }}
+                                        </div>
+                                    {% endif %} -->
+                                    <div class="help-block with-errors "></div>
+                                    <small class="error-field" style="color:#c14f5f;">
+                                        {% if form.non_field_errors and not form.email.errors %}
+                                            {{ form.non_field_errors.as_text }}
+                                        {% else %}
+                                            {{ form.email.errors.as_text }}
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-3">
+                                    <label class="control-label" for="id_password">*Password :</label>
+                                </div>
+                                <div class="col-sm-6">
+                                    {{ form.password }}
+                                    <!-- <div class="help-block with-errors"></div>
+                                    {% if form.password.errors %}
+                                        <div class="alert alert-danger server_errors" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            {{ form.password.errors.as_text }}
+                                        </div>
+                                    {% endif %} -->
+                                    <div class="help-block with-errors "></div>
+                                    <small class="error-field" style="color:#c14f5f;">
+                                        {% if form.non_field_errors and not form.password.errors %}
+                                            {{ form.non_field_errors.as_text }}
+                                        {% else %}
+                                            {{ form.password.errors.as_text }}
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-3">
+                                    <label class="control-label" for="id_confirm_password">*Confirm Password :</label>
+                                </div>
+                                <div class="col-sm-6">
+                                    {{ form.confirm_password }}
+                                    <div class="help-block with-errors"></div>
+                                    {% if form.confirm_password.errors %}
+                                        <div class="alert alert-danger server_errors" role="alert">
+                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                            {{ form.confirm_password.errors.as_text }}
+                                        </div>
+                                    {% endif %}
+                                    <!-- <small class="error-field" style="color:#c14f5f;">
+                                        <div class="help-block with-errors "></div>
+                                        {% if form.non_field_errors and not form.confirm_password.errors %}
+                                            {{ form.non_field_errors.as_text }}
+                                        {% else %}
+                                            {{ form.confirm_password.errors.as_text }}
+                                        {% endif %}
+                                    </small> -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='row'>
+                            <div class="col-sm-offset-1 col-sm-3">
+                                 <label class="control-label"></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                     <input class="btn btn-primary btn-block" style="background-color: #09707c" type='submit' value='Sign Up'>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

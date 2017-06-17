@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+
+<div class="container" style="background-color:"><br>
+    <div class="row">
+        <div class="col-md-3 col-md-offset-1">
+            {% if userdetails_obj.image %}
+            <!-- <img id="img" class="img-responsive" src="{{ product.get_image_url }}" /><br/> -->
+            <img src="{{ userdetails_obj.image.url }}" alt="{{userdetails_obj.first_name}}" width="260px" height="200px">
+            {% else %}
+            <img src="{% static 'img/noimagefound.jpg' %}" alt="{{userdetails_obj.first_name}}" width="190px" height="190px">
+            {% endif %}<br>
+            <!-- <img src="{% static 'img/cash.jpg' %}" alt="{{userdetails_obj.first_name}}" width="190px" height="190px"> -->
+            <!-- <div style="background-image: url('{% static 'img/adrift-tiki-bar.png' %}'); background-size: cover; background-position: 50% 80%; width: 100%; height: 100%; ">
+                <img alt="" src="{% if employee.image %}{{ employee.image.url }}{% else %}{% static 'images/nodp.jpg' %}{% endif %}">
+            </div> -->
+            {% if request.user != userdetails_obj.user %}
+            <p><strong><h4><center>{{ searched_user.first_name }} {{ searched_user.last_name }}</center></h4></strong></p>
+            {% else %}
+            <p><strong><h4><center>{{ request.user.first_name }} {{ request.user.last_name }}</center></h4></strong></p>
+            {% endif %}
+
+            {% if  request.user != userdetails_obj.user %}
+                {% if userdetails_obj.id in if_following %}
+                    <button class="btn btn-primary btn-sm" style="margin-left: 90px;" id="delete_friend" role="button">Unfollow</button>
+                    <button class="btn btn-primary btn-sm" id="add_friend" style="margin-left: 90px; display: none;" role="button">Follow</button>
+                {% else %}
+                    <button class="btn btn-primary btn-sm" style="margin-left: 90px" id="add_friend" role="button">Follow</button>
+                    <button class="btn btn-primary btn-sm" id="delete_friend" style="margin-left: 90px; display: none;" role="button">Unfollow</button>
+                {% endif %}
+            {% endif %} <br> <br>
+
+        </div>
+        <div class="col-md-7">
+            <div class="panel panel-default" style="height: 225px; background-color:#CCFF99;">
+                <div class="panel-body">
+                    <!-- <h4><strong>About</h4></strong> -->
+
+                        {% if request.user != userdetails_obj.user %}
+                        <h4><strong>{{ searched_user.first_name }} {{ searched_user.last_name }}</h4></strong>
+                        {% else %}
+                        <h4><strong>{{ request.user.first_name }} {{ request.user.last_name }}</h4></strong>
+                        {% endif %}
+
+                    <p>{{ userdetails_obj.user_description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col-md-2 col-md-offset-1">
+            {% if  request.user != userdetails_obj.user %}
+                {% if userdetails_obj.id in if_following %}
+                    <button class="btn btn-primary btn-sm" style="margin-left: 40px;" id="delete_friend" role="button">Unfollow</button>
+                    <button class="btn btn-primary btn-sm" id="add_friend" style="margin-left: 40px; display: none;" role="button">Follow</button>
+                {% else %}
+                    <button class="btn btn-primary btn-sm" style="margin-left: 40px" id="add_friend" role="button">Follow</button>
+                    <button class="btn btn-primary btn-sm" id="delete_friend" style="margin-left: 40px; display: none;" role="button">Unfollow</button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div><br> -->
+    <div class="row">
+        <div class="col-md-3 col-md-offset-1">
+            <div class="panel panel-default" style=" height: 175px; background-color:#CCFF99;">
+                <div class="panel-body">
+                <!-- <div class="container"><br> -->
+                {% if request.user == userdetails_obj.user %}
+                    <a><span class="glyphicon glyphicon-pencil" data-toggle="modal" data-target="#myModal" style="float:right;" ></span></a>
+                {% endif %}
+                    <p>{{userdetails_obj.mobile_no}}</p>
+                    <p>{{userdetails_obj.city}}</p>
+                    <p>{{userdetails_obj.state}}</p>
+                <!-- </div> -->
+                </div>
+            </div>
+        </div>
+        {% if request.user == userdetails_obj.user %}
+        <div class="col-md-7">
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <form id="post_form" method="post" >
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea rows="3" cols="0" class="form-control" id="status" placeholder="Describe yourself here..."> </textarea><br>
+                            <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/>
+                            <input class="btn btn-primary" type='submit' id="status_button" value='Post'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-7">
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <form id="friend_post_form" method="post" >
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea rows="3" cols="0" class="form-control" id="status" placeholder="Describe yourself here..."> </textarea><br>
+                            <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/>
+                            <input type="hidden" name="friend_id" value="{{ searched_user.id }}" id="id_friend_id"/>
+                            <input class="btn btn-primary" type='submit' id="status_button" value='Post'>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-md-offset-1 ">
+            {% if request.user == userdetails_obj.user %}
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <center><h4>Chat Rooms</h4><br>
+                    {% for group in groups %}
+                    <center><button type="button" class="btn btn-success" onclick="window.location.href='{% url 'home' group.id %}'">
+                    <strong style="color:white">{{ group.name }}</strong></button></center><br>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <center><h4> Following <strong>{{following_length}}</strong> </h4></center>
+                    {% for followin in following %}
+                    <a href="{% url "friends_profile" followin.id %}"><p><strong>{{ followin }}</strong></p></a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <center><h4> Followers <strong>{{followers_length}}</strong> </h4></center>
+                    {% for follower in followers %}
+                    <a href="{% url "friends_profile" follower.id %}"><p><strong>{{ follower }}</strong></p></a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- </div> -->
+
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-4">
+            </div> -->
+        <div class="col-md-7" id="displayed_post">
+            {% for status in user_status %}
+                {% if status.to_friend_wall %}
+                    <a href="{% url "friends_profile" status.user.id %}" ><strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a>  Writes on
+                    <a href="{% url "friends_profile" status.to_friend_wall.id %}" > <strong> {{ status.to_friend_wall.first_name }} {{ status.to_friend_wall.last_name }} </strong> </a> Wall  <br><br>
+                    <!-- <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/> -->
+                    <div class="well" style="background-color:#CCFF99;">
+                        {{ status }}
+                    </div> <hr>
+                {% else %}
+                <a href="{% url "friends_profile" status.user.id %}" ><strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a><br><br>
+                <div class="well" style="background-color:#CCFF99;">
+                    {{ status }}
+                </div> <hr>
+                {% endif %}
+                <!-- <div class="well" style="background-color:#CCFF99;">
+                    {{ status }}
+                </div> -->
+            {% endfor %}
+        </div>
+            <!-- <div class="col-md-2">
+            </div> -->
+    </div>
+</div>
+
+
+  <!-- Trigger the modal with a button -->
+  {% if request.user == userdetails_obj.user %}
+  <!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Your Details</button> -->
+
+  <!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Your Details</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form method="POST" role="form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="id_image">*Profile Pic:</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.image }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="id_mobile_no">*Mobile No :</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.mobile_no }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="id_last_name">*City :</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.city }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="id_last_name">*State :</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.state }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <label class="control-label" for="id_last_name">*About You :</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    {{ form.user_description }}
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </form> -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-md-offset-5">
+                        <div class="input-group">
+                            <input class="btn btn-defult" type='submit' value='Add'>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+
+
+
+<script>
+
+{% if more %}
+    bindEvent("{{ start }}");
+{% endif %}
+
+$(document).ready(function(){
+    $('#add_friend').on('click', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : "{% url 'add_friend' userdetails_obj.id %}",
+            type : 'POST',
+            data : {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'action': "follow"
+                // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                // msgbox : $('#chat-msg').val(),
+                // group_id : {{ group_obj.id }}
+            },
+            success: function(response){
+                response = JSON.parse(response);
+                if (response.status){
+                    $('#delete_friend').show();
+                    $('#add_friend').hide();
+                }
+
+            }
+        });
+    });
+
+    $('#delete_friend').on('click', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : "{% url 'add_friend' userdetails_obj.id %}",
+            type : 'POST',
+            data : {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'action': "unfollow"
+                // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                // msgbox : $('#chat-msg').val(),
+                // group_id : {{ group_obj.id }}
+            },
+            success: function(response){
+                response = JSON.parse(response);
+                if (response.status){
+                    $('#delete_friend').hide();
+                    $('#add_friend').show();
+                }
+
+            }
+        });
+
+
+    });
+
+    $('#post_form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : "{% url 'post' %}",
+            type : 'POST',
+            data : {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                post: $('#status').val(),
+                image: $('#image').val(),
+                for: "posting_on_ourself_wall"
+                // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                // msgbox : $('#chat-msg').val(),
+                // group_id : {{ group_obj.id }}
+            },
+            success: function(response){
+                response = JSON.parse(response);
+                if (response.status){
+
+                    $("#displayed_post").prepend(
+                        "<a><strong> "+response.post_user_first_name+ " " + response.post_user_last_name + "</strong> </a><br><br>"+
+                        "<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div><hr>"
+                       )
+
+                    // $("#displayed_post").prepend("{% for status in user_status %} {% if status.to_friend_wall %}"+
+                    //     "<a href='{% url 'friends_profile' status.user.id %}'>"+
+                    //     "<strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a><br><br>"+
+                    //     "<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div><hr>"+
+                    //     "{% endif %} {% endfor %} ")
+
+
+                    // $("#displayed_post").prepend("<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div>")
+                    $("#post_form")[0].reset();
+                }
+
+            }
+        });
+    });
+
+
+    $('#friend_post_form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : "{% url 'post' %}",
+            type : 'POST',
+            data : {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                post: $('#status').val(),
+                for: "posting_on_friends_wall",
+                friend_id: $('#id_friend_id').val(),
+
+                // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                // msgbox : $('#chat-msg').val(),
+                // group_id : {{ group_obj.id }}
+            },
+            success: function(response){
+                response = JSON.parse(response);
+                if (response.status){
+                    $("#displayed_post").prepend(
+                        "<a> <strong>"+ response.post_user_first_name +" "+response.post_user_last_name + "</strong> </a>"
+                        + " writes on " +
+                        "<a> <strong>"+ response.post_to_friend_wall_frist_name + " " +response.post_to_friend_wall_last_name + "</strong> </a>"+
+                        " Wall <br> <br> " + " <div class='well' style='background-color:#CCFF99;'> " +
+                        response.post + "</div> <hr>"
+                    )
+
+                    // $("#displayed_post").prepend("<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div>")
+                    $("#friend_post_form")[0].reset();
+                }
+
+            }
+        });
+    });
+
+
+    $('#status_button').attr('disabled','disabled');
+    $('#status').keypress(function(){
+        if($(this).val() != null ){
+            $('#status_button').removeAttr('disabled');
+        }
+        else{
+            $('#status_button').attr('disabled', 'disabled');
+        }
+    });
+
+});
+
+function bindEvent(start){
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() > $(document).height()-300){
+            load_status(start);
+        }
+    });
+}
+
+function load_status(start) {
+    $(window).unbind('scroll');
+    $('#id_pagination_start').val(start);
+    // $("#spin_svg").show();
+
+    $.ajax({
+        url: "{% url 'home_load_more_user' %}",
+        type: "POST",
+        data: $('#post_form').serialize(),
+        success: function(response) {
+            // $("#spin_svg").hide();
+            $("#displayed_post").append(response.data);
+
+            if (response.more){
+                bindEvent(response.start);
+            }
+        }
+    });
+    return false;
+}
+
+</script>
+
+{% endblock %}

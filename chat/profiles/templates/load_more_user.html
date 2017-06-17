@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-md-12" id="displayed_post">
+        {% for status in user_status %}
+            {% if status.to_friend_wall %}
+                <a href="{% url "friends_profile" status.user.id %}" ><strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a>  Writes on
+                <a href="{% url "friends_profile" status.to_friend_wall.id %}" > <strong> {{ status.to_friend_wall.first_name }} {{ status.to_friend_wall.last_name }} </strong> </a> Wall  <br><br>
+                <!-- <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/> -->
+                <div class="well" style="background-color:#CCFF99;">
+                    {{ status }}
+                </div> <hr>
+            {% else %}
+            <a href="{% url "friends_profile" status.user.id %}" ><strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a><br><br>
+            <div class="well" style="background-color:#CCFF99;">
+                {{ status }}
+            </div> <hr>
+            {% endif %}
+            <!-- <div class="well" style="background-color:#CCFF99;">
+                {{ status }}
+            </div> -->
+        {% endfor %}
+    </div>
+</div>

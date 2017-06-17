@@ -1,0 +1,14 @@
+Automat==0.6.0
+Django==1.9
+Pillow==4.1.1
+Twisted==13.1.0
+argparse==1.2.1
+attrs==17.2.0
+constantly==15.1.0
+django-realtime==1.1
+incremental==17.5.0
+olefile==0.44
+pyOpenSSL==17.0.0
+six==1.10.0
+wsgiref==0.1.2
+zope.interface==4.4.1

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            {% for p in post %}
+            <p>{{ p }} </p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+ -->
+<div class="container">
+    <div class="row"><br>
+        <div class="col-md-3">
+            {% if userdetails_obj.image %}
+            <img src="{{ userdetails_obj.image.url }}" alt="{{userdetails_obj.first_name}}" width="200px" height="190px">
+            {% else %}
+            <img src="{% static 'img/noimagefound.jpg' %}" alt="{{userdetails_obj.first_name}}" width="190px" height="190px">
+            {% endif %}
+            <p><strong><h4 style="margin-left:25px;">{{ request.user.first_name }} {{ request.user.last_name }}</h4></strong></p><br>
+            <div class="panel panel-default" style="background-color:#CCFF99; width:200px;">
+                <div class="panel-body">
+                    <center><h4>Chat Rooms</h4><br>
+                    {% for group in groups %}
+                        <center><button type="button" class="btn btn-success" onclick="window.location.href='{% url 'home' group.id %}'">
+                        <strong style="color:white">{{ group.name }}</strong></button></center><br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="panel panel-default" style="background-color:#CCFF99;">
+                <div class="panel-body">
+                    <!-- <form id="post_form" method="post" enctype='multipart/form-data'>
+                        {% csrf_token %}
+                        <div class="form-group" >
+                            {{ form.status }} <br>
+                            {{ form.image }} <br>
+                            <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/>
+                            <input class="btn btn-primary" type='submit' id="status_button" value='Post'>
+                        </div>
+                    </form> -->
+
+                    <form id="post_form" method="post" enctype='multipart/form-data' >
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea rows="3" cols="0" class="form-control" id="id_status" placeholder="Describe yourself here..."> </textarea><br>
+                            <input type="hidden" name="start" value="{{ start }}" id="id_pagination_start"/>
+                            <!-- <input type="file" name="image"  id="image_post" accept="image/*"> <br> -->
+                            <input class="btn btn-primary" type='submit' id="status_button" value='Post'>
+                        </div>
+                    </form>
+                </div>
+            </div><hr>
+            <div  id="displayed_post">
+                {% for p in post %}
+                    {% if p.to_friend_wall %}
+                    <a href="{% url "friends_profile" p.user.id %}"><strong>{{ p.user.first_name }} {{ p.user.last_name }}</strong></a>
+                     writes on <a href="{% url "friends_profile" p.to_friend_wall.id %}" > <strong> {{ p.to_friend_wall.first_name }} {{ p.to_friend_wall.last_name }} </strong> </a> Wall <br><br>
+                    <div class="well" style="background-color:#CCFF99;">
+                        <p>{{ p }} </p>
+                    </div>
+                    <hr>
+                    {% else %}
+                    <a href="{% url "friends_profile" p.user.id %}"><strong>{{ p.user.first_name }} {{ p.user.last_name }}</strong></a> <br><br>
+                        <div class="well" style="background-color:#CCFF99;">
+                            <p>{{ p }} </p>
+                        </div>
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+</div>
+
+<script>
+
+{% if more %}
+    bindEvent("{{ start }}");
+{% endif %}
+
+$(document).ready(function(){
+
+    $('#post_form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : "{% url 'post' %}",
+            type : 'POST',
+            data : {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                post: $('#id_status').val(),
+                image: $("#image_post").val(),
+                for: "posting_on_ourself_wall"
+                // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                // msgbox : $('#chat-msg').val(),
+                // group_id : {{ group_obj.id }}
+            },
+            success: function(response){
+                response = JSON.parse(response);
+                if (response.status){
+
+                    $("#displayed_post").prepend(
+                        "<a><strong> "+response.post_user_first_name+ " " + response.post_user_last_name + "</strong> </a><br><br>"+
+                        "<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div><hr>"
+                       )
+
+                    // $("#displayed_post").prepend("{% for status in user_status %} {% if status.to_friend_wall %}"+
+                    //     "<a href='{% url 'friends_profile' status.user.id %}'>"+
+                    //     "<strong> {{ status.user.first_name }} {{ status.user.last_name }} </strong> </a><br><br>"+
+                    //     "<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div><hr>"+
+                    //     "{% endif %} {% endfor %} ")
+
+
+                    // $("#displayed_post").prepend("<div class='well' style='background-color:#CCFF99;'>"+response.post+"</div>")
+                    $("#post_form")[0].reset();
+                }
+
+            }
+        });
+    });
+
+    $('#status_button').attr('disabled','disabled');
+    $('#id_status').keypress(function(){
+        if($(this).val() != null ){
+            $('#status_button').removeAttr('disabled');
+        }
+        else{
+            $('#status_button').attr('disabled', 'disabled');
+        }
+    });
+    // $('#id_image').val() == true
+
+});
+function bindEvent(start){
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() > $(document).height()-300){
+            load_status(start);
+        }
+    });
+}
+
+function load_status(start) {
+    $(window).unbind('scroll');
+    $('#id_pagination_start').val(start);
+    // $("#spin_svg").show();
+
+    $.ajax({
+        url: "{% url 'home_load_more_user' %}",
+        type: "POST",
+        data: $('#post_form').serialize(),
+        success: function(response) {
+            // $("#spin_svg").hide();
+            $("#displayed_post").append(response.data);
+
+            if (response.more){
+                bindEvent(response.start);
+            }
+        }
+    });
+    return false;
+}
+
+
+</script>
+{% endblock %}

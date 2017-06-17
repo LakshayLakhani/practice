@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+<br>
+<center> <h2> <strong> TAS Group Chat </strong></h2></center>
+<div class="container">
+    <div id="chat-body" class="panel panel-default" style="background-color:white;">
+        <div class="panel-heading"> Chat Box </div>
+        <div id="msg-list-div" class="panel-body">
+            <ul id="msg-list" class="list-group">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+                {% for obj in chat %}
+                    {% if obj.user == request.user %}
+                        <li class="text-right list-group-item" style="background-color:#e3e8ef;">{{ obj.message }}</li><br><hr>
+                    {% else %}
+                        <strong>{{ obj.user }}</strong><li class="text-left list-group-item" style="background-color:#a3c9ff;">{{ obj.message }}</li><br><hr>
+                    {% endif %}
+                {% empty %}
+                    <li class="text-right list-group-item">No messgaes yet! </li>
+                {% endfor %}
+                    </div>
+                </div>
+            </ul>
+            <p id="someone"></p>
+        </div>
+        <div class="panel-footer clearfix">
+            <form id="chat-form" method="post">
+                {% csrf_token %}
+                <div id="chat-bottom">
+                    <textarea id="chat-msg" name="chat-msg" class="form-control" rows="3"></textarea>
+                    <span class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-xs-12" style="margin-top: 10px">
+                        <button class="btn btn-warning btn-lg btn-block" id="send" type="submit">Send</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $('#chat-form').on('submit', function(event){
+        event.preventDefault();
+        $.ajax({
+            url : '{% url "chat_post" %}',
+            type : 'POST',
+            data : {
+                csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+                msgbox : $('#chat-msg').val(),
+                group_id : {{ group_obj.id }}
+            },
+
+            success : function(json){
+                $('#chat-msg').val('');
+                $('#msg-list').append( '<div class="row"><div class="col-md-offset-2 col-md-8"> <li class="text-right list-group-item style="background-color:#c0d5f7;">'+ json.msg + '</li></div></div>');
+            }
+        });
+    });
+
+    function getMessages(){
+        if (!scrolling){
+            $.get('{% url "messages" group_obj.id  %}', function(messages){
+                $("#msg-list").html(messages);
+            });
+        }
+        scrolling = false;
+    }
+
+    var scrolling = false;
+    $(function(){
+        $('#msg-list-div').on('scroll', function(){
+            scrolling = true;
+        });
+        refreshTimer = setInterval(getMessages,  2500);
+    });
+
+    $('#send').attr('disabled','disabled');
+    $('#chat-msg').keypress(function(){
+        if($(this).val() != ''){
+            $('#send').removeAttr('disabled');
+        }
+        else{
+            $('#send').attr('disabled', 'disabled');
+        }
+    });
+
+    // $('#chat-msg').keypress(function(){
+    //     $.ajax({
+    //         url : '{% url "someonetyping" %}',
+    //         type : 'GET',
+    //         // data : {
+    //         //     // csrfmiddlewaretoken: document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    //         //     // msgbox : $('#chat-msg').val()
+    //         // },
+    //
+    //         success : function(json){
+    //             // $('#chat-msg').val('');
+    //             // $('#someone').text( json.user + 'is typing...');
+    //             $('#someone').text( 'typing...');
+    //         }
+    //     });
+    //
+    //     function getSomeone(){
+    //         console.log("in getSomeone");
+    //         if (!scroll){
+    //             $.get('{% url "someone" %}', function(someone){
+    //                 $("#someone").html(someone);
+    //             });
+    //         }
+    //         scroll = false;
+    //     }
+    //
+    //     var scroll = false;
+    //     $(function(){
+    //         $('#msg-list-div').on('scroll', function(){
+    //             scroll = true;
+    //         });
+    //         refreshTimer = setInterval(getSomeone, 10000);
+    //     });
+    // });
+});
+
+</script>
+
+{% endblock %}

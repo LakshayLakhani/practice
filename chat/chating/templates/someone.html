@@ -1,0 +1,23 @@
+{% extends 'base.html'%}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<!-- { if not } -->
+<p> typing... </p>
+<!-- <div class="row">
+    <div class="col-md-offset-2 col-md-8">
+{% for obj in chat %}
+    {% if obj.user == request.user %}
+        <li class="text-right list-group-item" style="background-color:#e3e8ef;">{{ obj.message }}</li><br><hr>
+    {% else %}
+        <strong>{{ obj.user }}</strong><li class="text-left list-group-item" style="background-color:#a3c9ff;">{{ obj.message }}</li><br><hr>
+    {% endif %}
+{% empty %}
+    <li class="text-right list-group-item">No messgaes yet! </li>
+{% endfor %}
+    </div>
+</div> -->
+
+{% endblock %}
